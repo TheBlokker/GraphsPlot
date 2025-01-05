@@ -32,12 +32,12 @@ type
     procedure SetFunction(AFunction: TFunc<Double, Double>);
     procedure SetScale(AScaleX, AScaleY: Double);
     procedure DrawFunction;
-    procedure Drawleniarefkt(m, n : Double);
-    procedure Drawquadratfkt(a, b, c : Double);
-    procedure Drawsinfkt(a, b, c, d : Double);
-    procedure Drawcosfkt(a, b, c, d : Double);
-    procedure Drawtanfkt(a, b, c, d : Double);
-    procedure Drawsenkrfkt(k : Double);
+    procedure Drawleniarefkt(m, n: Double);
+    procedure Drawquadratfkt(a, b, c: Double);
+    procedure Drawsinfkt(a, b, c, d: Double);
+    procedure Drawcosfkt(a, b, c, d: Double);
+    procedure Drawtanfkt(a, b, c, d: Double);
+    procedure Drawsenkrfkt(k: Double);
     procedure AnalyzeFunction;
   end;
 
@@ -124,6 +124,10 @@ type
 
 var
   Form1: TForm1;
+  Farben: array [0 .. 16] of TColor;
+  // Array kann global defniert werden, TList aber nicht?
+  CounterFarben: Integer;
+  
 
 implementation
 
@@ -244,9 +248,6 @@ begin
   end;
 end;
 
-
-
-
 procedure TFunctionWorker.DrawFunction;
 var
   x, y: Double;
@@ -255,7 +256,7 @@ begin
   FMemoX.Clear;
   FMemoY.Clear;
 
-  FCanvas.Pen.Color := clRed;
+  FCanvas.Pen.Color := Farben[Random(Length(Farben))];
   FCanvas.Pen.Width := 2;
 
   for px := 0 to FWidth do
@@ -283,64 +284,63 @@ begin
     function(x: Double): Double
     begin
       Result := m * x + n;
-    end
-  );
+    end);
   DrawFunction;
 end;
 
-procedure TFunctionWorker.DrawQuadratFkt(a: Double; b: Double; c: Double);
+procedure TFunctionWorker.Drawquadratfkt(a: Double; b: Double; c: Double);
 begin
   SetFunction(
     function(x: Double): Double
     begin
       Result := a * x * x + b * x + c;
-    end
-  );
+    end);
   DrawFunction;
 end;
 
-procedure TFunctionWorker.DrawSinFkt(a: Double; b: Double; c: Double; d: Double);
+procedure TFunctionWorker.Drawsinfkt(a: Double; b: Double; c: Double;
+d: Double);
 begin
   SetFunction(
     function(x: Double): Double
     begin
       Result := a * Sin(b * x + c) + d;
-    end
-  );
+    end);
   DrawFunction;
 end;
 
-procedure TFunctionWorker.DrawCosFkt(a: Double; b: Double; c: Double; d: Double);
+procedure TFunctionWorker.Drawcosfkt(a: Double; b: Double; c: Double;
+d: Double);
 begin
   SetFunction(
     function(x: Double): Double
     begin
       Result := a * Cos(b * x + c) + d;
-    end
-  );
+    end);
   DrawFunction;
 end;
 
-procedure TFunctionWorker.DrawTanFkt(a: Double; b: Double; c: Double; d: Double);
+procedure TFunctionWorker.Drawtanfkt(a: Double; b: Double; c: Double;
+d: Double);
 begin
   SetFunction(
     function(x: Double): Double
     begin
       Result := a * Tan(b * x + c) + d;
-    end
-  );
+    end);
   DrawFunction;
 end;
 
-procedure TFunctionWorker.DrawSenkrFkt(k: Double);
+procedure TFunctionWorker.Drawsenkrfkt(k: Double);
 var
   px: Integer;
 begin
+
   // Berechnung der Pixelposition für x = k
   px := FOffsetX + Round(k * FScaleX);
 
   // Zeichne die senkrechte Linie
-  FCanvas.Pen.Color := clBlue;
+  FCanvas.Pen.Color := Farben[Random(Length(Farben))];
   FCanvas.Pen.Width := 2;
   FCanvas.MoveTo(px, 0);
   FCanvas.LineTo(px, FHeight);
@@ -351,7 +351,6 @@ begin
   FMemoY.Clear;
   FMemoY.Lines.Add('Alle y-Werte möglich');
 end;
-
 
 procedure TFunctionWorker.AnalyzeFunction;
 begin
@@ -365,267 +364,306 @@ end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
-case ComboBox1.ItemIndex of
-  0: begin
-    Labellenifktx.Visible := true;
-    Editlenifktm.Visible := true;
-    Editlenifktn.Visible := true;
-    Labelyistgleich.Visible := true;
+  case ComboBox1.ItemIndex of
+    0:
+      begin
+        Labellenifktx.Visible := true;
+        Editlenifktm.Visible := true;
+        Editlenifktn.Visible := true;
+        Labelyistgleich.Visible := true;
 
-    // False statements
-    Labelquadratx.Visible:=false;
-    Labelquadratxhoch2.Visible := false;
-    Editquadratfkta.Visible := false;
-    Editquadratfktb.Visible := false;
-    Editquadratfktc.Visible := false;
-    Labelsinfktsin.Visible := false;
-    Labelsinfktx.Visible := false;
-    Labelsinfktplus.Visible := false;
-    Editsinfkta.Visible := false;
-    Editsinfktb.Visible := false;
-    Editsinfktc.Visible := false;
-    Editsinfktd.Visible := false;
-    Labelcosfktcos.Visible := false;
-    Labelcosfktx.Visible := false;
-    Labelcosfktplus.Visible := false;
-    Editcosfkta.Visible := false;
-    Editcosfktb.Visible := false;
-    Editcosfktc.Visible := false;
-    Editcosfktd.Visible := false;
-    Labeltanfkttan.Visible := false;
-    Labeltanfktx.Visible := false;
-    Labeltanfktplus.Visible := false;
-    Edittanfkta.Visible := false;
-    Edittanfktb.Visible := false;
-    Edittanfktc.Visible := false;
-    Edittanfktd.Visible := false;
-    Labelxistgleich.Visible := false;
-    Editsenkrfktk.Visible := false;
+        // False statements
+        Labelquadratx.Visible := false;
+        Labelquadratxhoch2.Visible := false;
+        Editquadratfkta.Visible := false;
+        Editquadratfktb.Visible := false;
+        Editquadratfktc.Visible := false;
+        Labelsinfktsin.Visible := false;
+        Labelsinfktx.Visible := false;
+        Labelsinfktplus.Visible := false;
+        Editsinfkta.Visible := false;
+        Editsinfktb.Visible := false;
+        Editsinfktc.Visible := false;
+        Editsinfktd.Visible := false;
+        Labelcosfktcos.Visible := false;
+        Labelcosfktx.Visible := false;
+        Labelcosfktplus.Visible := false;
+        Editcosfkta.Visible := false;
+        Editcosfktb.Visible := false;
+        Editcosfktc.Visible := false;
+        Editcosfktd.Visible := false;
+        Labeltanfkttan.Visible := false;
+        Labeltanfktx.Visible := false;
+        Labeltanfktplus.Visible := false;
+        Edittanfkta.Visible := false;
+        Edittanfktb.Visible := false;
+        Edittanfktc.Visible := false;
+        Edittanfktd.Visible := false;
+        Labelxistgleich.Visible := false;
+        Editsenkrfktk.Visible := false;
+      end;
+
+    1:
+      begin
+        Labelquadratxhoch2.Visible := true;
+        Labelquadratx.Visible := true;
+        Editquadratfkta.Visible := true;
+        Editquadratfktb.Visible := true;
+        Editquadratfktc.Visible := true;
+        Labelyistgleich.Visible := true;
+
+        // False statements
+        Labellenifktx.Visible := false;
+        Editlenifktm.Visible := false;
+        Editlenifktn.Visible := false;
+        Labelsinfktsin.Visible := false;
+        Labelsinfktx.Visible := false;
+        Labelsinfktplus.Visible := false;
+        Editsinfkta.Visible := false;
+        Editsinfktb.Visible := false;
+        Editsinfktc.Visible := false;
+        Editsinfktd.Visible := false;
+        Labelcosfktcos.Visible := false;
+        Labelcosfktx.Visible := false;
+        Labelcosfktplus.Visible := false;
+        Editcosfkta.Visible := false;
+        Editcosfktb.Visible := false;
+        Editcosfktc.Visible := false;
+        Editcosfktd.Visible := false;
+        Labeltanfkttan.Visible := false;
+        Labeltanfktx.Visible := false;
+        Labeltanfktplus.Visible := false;
+        Edittanfkta.Visible := false;
+        Edittanfktb.Visible := false;
+        Edittanfktc.Visible := false;
+        Edittanfktd.Visible := false;
+        Labelxistgleich.Visible := false;
+        Editsenkrfktk.Visible := false;
+      end;
+
+    2:
+      begin
+        Labelsinfktsin.Visible := true;
+        Labelsinfktx.Visible := true;
+        Labelsinfktplus.Visible := true;
+        Editsinfkta.Visible := true;
+        Editsinfktb.Visible := true;
+        Editsinfktc.Visible := true;
+        Editsinfktd.Visible := true;
+        Labelyistgleich.Visible := true;
+
+        // False statements
+        Labelquadratx.Visible := false;
+        Labellenifktx.Visible := false;
+        Editlenifktm.Visible := false;
+        Editlenifktn.Visible := false;
+        Labelquadratxhoch2.Visible := false;
+        Editquadratfkta.Visible := false;
+        Editquadratfktb.Visible := false;
+        Editquadratfktc.Visible := false;
+        Labelcosfktcos.Visible := false;
+        Labelcosfktx.Visible := false;
+        Labelcosfktplus.Visible := false;
+        Editcosfkta.Visible := false;
+        Editcosfktb.Visible := false;
+        Editcosfktc.Visible := false;
+        Editcosfktd.Visible := false;
+        Labeltanfkttan.Visible := false;
+        Labeltanfktx.Visible := false;
+        Labeltanfktplus.Visible := false;
+        Edittanfkta.Visible := false;
+        Edittanfktb.Visible := false;
+        Edittanfktc.Visible := false;
+        Edittanfktd.Visible := false;
+        Labelxistgleich.Visible := false;
+        Editsenkrfktk.Visible := false;
+      end;
+
+    3:
+      begin
+        Labelcosfktcos.Visible := true;
+        Labelcosfktx.Visible := true;
+        Labelcosfktplus.Visible := true;
+        Editcosfkta.Visible := true;
+        Editcosfktb.Visible := true;
+        Editcosfktc.Visible := true;
+        Editcosfktd.Visible := true;
+        Labelyistgleich.Visible := true;
+
+        // False statements
+        Labelquadratx.Visible := false;
+        Labellenifktx.Visible := false;
+        Editlenifktm.Visible := false;
+        Editlenifktn.Visible := false;
+        Labelquadratxhoch2.Visible := false;
+        Editquadratfkta.Visible := false;
+        Editquadratfktb.Visible := false;
+        Editquadratfktc.Visible := false;
+        Labelsinfktsin.Visible := false;
+        Labelsinfktx.Visible := false;
+        Labelsinfktplus.Visible := false;
+        Editsinfkta.Visible := false;
+        Editsinfktb.Visible := false;
+        Editsinfktc.Visible := false;
+        Editsinfktd.Visible := false;
+        Labeltanfkttan.Visible := false;
+        Labeltanfktx.Visible := false;
+        Labeltanfktplus.Visible := false;
+        Edittanfkta.Visible := false;
+        Edittanfktb.Visible := false;
+        Edittanfktc.Visible := false;
+        Edittanfktd.Visible := false;
+        Labelxistgleich.Visible := false;
+        Editsenkrfktk.Visible := false;
+      end;
+
+    4:
+      begin
+        Labeltanfkttan.Visible := true;
+        Labeltanfktx.Visible := true;
+        Labeltanfktplus.Visible := true;
+        Edittanfkta.Visible := true;
+        Edittanfktb.Visible := true;
+        Edittanfktc.Visible := true;
+        Edittanfktd.Visible := true;
+        Labelyistgleich.Visible := true;
+
+        // False statements
+        Labelquadratx.Visible := false;
+        Labellenifktx.Visible := false;
+        Editlenifktm.Visible := false;
+        Editlenifktn.Visible := false;
+        Labelquadratxhoch2.Visible := false;
+        Editquadratfkta.Visible := false;
+        Editquadratfktb.Visible := false;
+        Editquadratfktc.Visible := false;
+        Labelsinfktsin.Visible := false;
+        Labelsinfktx.Visible := false;
+        Labelsinfktplus.Visible := false;
+        Editsinfkta.Visible := false;
+        Editsinfktb.Visible := false;
+        Editsinfktc.Visible := false;
+        Editsinfktd.Visible := false;
+        Labelcosfktcos.Visible := false;
+        Labelcosfktx.Visible := false;
+        Labelcosfktplus.Visible := false;
+        Editcosfkta.Visible := false;
+        Editcosfktb.Visible := false;
+        Editcosfktc.Visible := false;
+        Editcosfktd.Visible := false;
+        Labelxistgleich.Visible := false;
+        Editsenkrfktk.Visible := false;
+      end;
+
+    5:
+      begin
+        Labelxistgleich.Visible := true;
+        Editsenkrfktk.Visible := true;
+
+        // False statements
+        Labelyistgleich.Visible := false;
+        Labelquadratx.Visible := false;
+        Labellenifktx.Visible := false;
+        Editlenifktm.Visible := false;
+        Editlenifktn.Visible := false;
+        Labelquadratxhoch2.Visible := false;
+        Editquadratfkta.Visible := false;
+        Editquadratfktb.Visible := false;
+        Editquadratfktc.Visible := false;
+        Labelsinfktsin.Visible := false;
+        Labelsinfktx.Visible := false;
+        Labelsinfktplus.Visible := false;
+        Editsinfkta.Visible := false;
+        Editsinfktb.Visible := false;
+        Editsinfktc.Visible := false;
+        Editsinfktd.Visible := false;
+        Labelcosfktcos.Visible := false;
+        Labelcosfktx.Visible := false;
+        Labelcosfktplus.Visible := false;
+        Editcosfkta.Visible := false;
+        Editcosfktb.Visible := false;
+        Editcosfktc.Visible := false;
+        Editcosfktd.Visible := false;
+        Labeltanfkttan.Visible := false;
+        Labeltanfktx.Visible := false;
+        Labeltanfktplus.Visible := false;
+        Edittanfkta.Visible := false;
+        Edittanfktb.Visible := false;
+        Edittanfktc.Visible := false;
+        Edittanfktd.Visible := false;
+      end;
   end;
 
-  1: begin
-    Labelquadratxhoch2.Visible := true;
-    Labelquadratx.Visible := true;
-    Editquadratfkta.Visible := true;
-    Editquadratfktb.Visible := true;
-    Editquadratfktc.Visible := true;
-    Labelyistgleich.Visible := true;
-
-    // False statements
-    Labellenifktx.Visible := false;
-    Editlenifktm.Visible := false;
-    Editlenifktn.Visible := false;
-    Labelsinfktsin.Visible := false;
-    Labelsinfktx.Visible := false;
-    Labelsinfktplus.Visible := false;
-    Editsinfkta.Visible := false;
-    Editsinfktb.Visible := false;
-    Editsinfktc.Visible := false;
-    Editsinfktd.Visible := false;
-    Labelcosfktcos.Visible := false;
-    Labelcosfktx.Visible := false;
-    Labelcosfktplus.Visible := false;
-    Editcosfkta.Visible := false;
-    Editcosfktb.Visible := false;
-    Editcosfktc.Visible := false;
-    Editcosfktd.Visible := false;
-    Labeltanfkttan.Visible := false;
-    Labeltanfktx.Visible := false;
-    Labeltanfktplus.Visible := false;
-    Edittanfkta.Visible := false;
-    Edittanfktb.Visible := false;
-    Edittanfktc.Visible := false;
-    Edittanfktd.Visible := false;
-    Labelxistgleich.Visible := false;
-    Editsenkrfktk.Visible := false;
-  end;
-
-  2: begin
-    Labelsinfktsin.Visible := true;
-    Labelsinfktx.Visible := true;
-    Labelsinfktplus.Visible := true;
-    Editsinfkta.Visible := true;
-    Editsinfktb.Visible := true;
-    Editsinfktc.Visible := true;
-    Editsinfktd.Visible := true;
-    Labelyistgleich.Visible := true;
-
-    // False statements
-    Labelquadratx.Visible := false;
-    Labellenifktx.Visible := false;
-    Editlenifktm.Visible := false;
-    Editlenifktn.Visible := false;
-    Labelquadratxhoch2.Visible := false;
-    Editquadratfkta.Visible := false;
-    Editquadratfktb.Visible := false;
-    Editquadratfktc.Visible := false;
-    Labelcosfktcos.Visible := false;
-    Labelcosfktx.Visible := false;
-    Labelcosfktplus.Visible := false;
-    Editcosfkta.Visible := false;
-    Editcosfktb.Visible := false;
-    Editcosfktc.Visible := false;
-    Editcosfktd.Visible := false;
-    Labeltanfkttan.Visible := false;
-    Labeltanfktx.Visible := false;
-    Labeltanfktplus.Visible := false;
-    Edittanfkta.Visible := false;
-    Edittanfktb.Visible := false;
-    Edittanfktc.Visible := false;
-    Edittanfktd.Visible := false;
-    Labelxistgleich.Visible := false;
-    Editsenkrfktk.Visible := false;
-  end;
-
-  3: begin
-    Labelcosfktcos.Visible := true;
-    Labelcosfktx.Visible := true;
-    Labelcosfktplus.Visible := true;
-    Editcosfkta.Visible := true;
-    Editcosfktb.Visible := true;
-    Editcosfktc.Visible := true;
-    Editcosfktd.Visible := true;
-    Labelyistgleich.Visible := true;
-
-    // False statements
-    Labelquadratx.Visible := false;
-    Labellenifktx.Visible := false;
-    Editlenifktm.Visible := false;
-    Editlenifktn.Visible := false;
-    Labelquadratxhoch2.Visible := false;
-    Editquadratfkta.Visible := false;
-    Editquadratfktb.Visible := false;
-    Editquadratfktc.Visible := false;
-    Labelsinfktsin.Visible := false;
-    Labelsinfktx.Visible := false;
-    Labelsinfktplus.Visible := false;
-    Editsinfkta.Visible := false;
-    Editsinfktb.Visible := false;
-    Editsinfktc.Visible := false;
-    Editsinfktd.Visible := false;
-    Labeltanfkttan.Visible := false;
-    Labeltanfktx.Visible := false;
-    Labeltanfktplus.Visible := false;
-    Edittanfkta.Visible := false;
-    Edittanfktb.Visible := false;
-    Edittanfktc.Visible := false;
-    Edittanfktd.Visible := false;
-    Labelxistgleich.Visible := false;
-    Editsenkrfktk.Visible := false;
-  end;
-
-  4: begin
-    Labeltanfkttan.Visible := true;
-    Labeltanfktx.Visible := true;
-    Labeltanfktplus.Visible := true;
-    Edittanfkta.Visible := true;
-    Edittanfktb.Visible := true;
-    Edittanfktc.Visible := true;
-    Edittanfktd.Visible := true;
-    Labelyistgleich.Visible := true;
-
-    // False statements
-    Labelquadratx.Visible := false;
-    Labellenifktx.Visible := false;
-    Editlenifktm.Visible := false;
-    Editlenifktn.Visible := false;
-    Labelquadratxhoch2.Visible := false;
-    Editquadratfkta.Visible := false;
-    Editquadratfktb.Visible := false;
-    Editquadratfktc.Visible := false;
-    Labelsinfktsin.Visible := false;
-    Labelsinfktx.Visible := false;
-    Labelsinfktplus.Visible := false;
-    Editsinfkta.Visible := false;
-    Editsinfktb.Visible := false;
-    Editsinfktc.Visible := false;
-    Editsinfktd.Visible := false;
-    Labelcosfktcos.Visible := false;
-    Labelcosfktx.Visible := false;
-    Labelcosfktplus.Visible := false;
-    Editcosfkta.Visible := false;
-    Editcosfktb.Visible := false;
-    Editcosfktc.Visible := false;
-    Editcosfktd.Visible := false;
-    Labelxistgleich.Visible := false;
-    Editsenkrfktk.Visible := false;
-  end;
-
-  5: begin
-    Labelxistgleich.Visible := true;
-    Editsenkrfktk.Visible := true;
-
-    // False statements
-    Labelyistgleich.Visible := false;
-    Labelquadratx.Visible := false;
-    Labellenifktx.Visible := false;
-    Editlenifktm.Visible := false;
-    Editlenifktn.Visible := false;
-    Labelquadratxhoch2.Visible := false;
-    Editquadratfkta.Visible := false;
-    Editquadratfktb.Visible := false;
-    Editquadratfktc.Visible := false;
-    Labelsinfktsin.Visible := false;
-    Labelsinfktx.Visible := false;
-    Labelsinfktplus.Visible := false;
-    Editsinfkta.Visible := false;
-    Editsinfktb.Visible := false;
-    Editsinfktc.Visible := false;
-    Editsinfktd.Visible := false;
-    Labelcosfktcos.Visible := false;
-    Labelcosfktx.Visible := false;
-    Labelcosfktplus.Visible := false;
-    Editcosfkta.Visible := false;
-    Editcosfktb.Visible := false;
-    Editcosfktc.Visible := false;
-    Editcosfktd.Visible := false;
-    Labeltanfkttan.Visible := false;
-    Labeltanfktx.Visible := false;
-    Labeltanfktplus.Visible := false;
-    Edittanfkta.Visible := false;
-    Edittanfktb.Visible := false;
-    Edittanfktc.Visible := false;
-    Edittanfktd.Visible := false;
-  end;
 end;
 
-
-  end;
-
-  procedure TForm1.EnterClick(Sender: TObject);
+procedure TForm1.EnterClick(Sender: TObject);
 begin
   case ComboBox1.ItemIndex of
-  0: begin
-    FWorker.Drawleniarefkt(StrToFloat(Editlenifktm.Text), StrToFloat(Editlenifktn.Text));
-  end;
-  1: begin
-    FWorker.Drawquadratfkt(StrToFloat(Editquadratfkta.Text), StrToFloat(Editquadratfktb.Text), StrToFloat(Editquadratfktc.Text));
-  end;
-  2: begin
-    FWorker.Drawsinfkt(StrToFloat(Editsinfkta.Text), StrToFloat(Editsinfktb.Text), StrToFloat(Editsinfktc.Text), StrToFloat(Editsinfktd.Text));
-  end;
-  3: begin
-    FWorker.Drawcosfkt(StrToFloat(Editcosfkta.Text), StrToFloat(Editcosfktb.Text), StrToFloat(Editcosfktc.Text), StrToFloat(Editcosfktd.Text));
-  end;
-  4: begin
-    FWorker.Drawtanfkt(StrToFloat(Edittanfkta.Text), StrToFloat(Edittanfktb.Text), StrToFloat(Edittanfktc.Text), StrToFloat(Edittanfktd.Text));
-  end;
-  5: begin
-    FWorker.Drawsenkrfkt(StrToFloat(Editsenkrfktk.Text));
-  end;
+    0:
+      begin
+        FWorker.Drawleniarefkt(StrToFloat(Editlenifktm.Text),
+          StrToFloat(Editlenifktn.Text));
+      end;
+    1:
+      begin
+        FWorker.Drawquadratfkt(StrToFloat(Editquadratfkta.Text),
+          StrToFloat(Editquadratfktb.Text), StrToFloat(Editquadratfktc.Text));
+      end;
+    2:
+      begin
+        FWorker.Drawsinfkt(StrToFloat(Editsinfkta.Text),
+          StrToFloat(Editsinfktb.Text), StrToFloat(Editsinfktc.Text),
+          StrToFloat(Editsinfktd.Text));
+      end;
+    3:
+      begin
+        FWorker.Drawcosfkt(StrToFloat(Editcosfkta.Text),
+          StrToFloat(Editcosfktb.Text), StrToFloat(Editcosfktc.Text),
+          StrToFloat(Editcosfktd.Text));
+      end;
+    4:
+      begin
+        FWorker.Drawtanfkt(StrToFloat(Edittanfkta.Text),
+          StrToFloat(Edittanfktb.Text), StrToFloat(Edittanfktc.Text),
+          StrToFloat(Edittanfktd.Text));
+      end;
+    5:
+      begin
+        FWorker.Drawsenkrfkt(StrToFloat(Editsenkrfktk.Text));
+      end;
 
   end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
-  begin
-    // funktioniert nur bei sin, wie bnei anderen fkt
-    FWorker := TFunctionWorker.Create(Image1.Canvas, Image1.Width,
-      Image1.Height, MemoX, MemoY, MemoAnalysis);
+begin
+  Randomize;
 
-    FWorker.DrawGrid;
-    
+  // funktioniert nur bei sin, wie bnei anderen fkt
+  FWorker := TFunctionWorker.Create(Image1.Canvas, Image1.Width, Image1.Height,
+    MemoX, MemoY, MemoAnalysis);
 
-  end;
+  FWorker.DrawGrid;
+  // Farben definieren
+  Farben[0] := clAqua;
+  Farben[1] := clBlack;
+  Farben[2] := clBlue;
+  Farben[3] := clCream;
+  Farben[4] := clDkGray;
+  Farben[5] := clFuchsia;
+  Farben[6] := clGreen;
+  Farben[7] := clLime;
+  Farben[8] := clMaroon;
+  Farben[9] := clMedGray; // In der bibliotheks referenz steht das es clMedGreen gibt.
+  Farben[10] := clNavy;
+  Farben[11] := clOlive;
+  Farben[12] := clPurple;
+  Farben[13] := clRed;
+  Farben[14] := clSkyBlue;
+  Farben[15] := clTeal;
+  Farben[16] := clYellow;
+
+
+end;
 
 end.
