@@ -38,7 +38,9 @@ type
     procedure Drawcosfkt(a, b, c, d: Double);
     procedure Drawtanfkt(a, b, c, d: Double);
     procedure Drawsenkrfkt(k: Double);
-    //procedure AnalyzeFunction;
+    procedure AnalyzeFunction;
+    function Derive(x: Double): Double;
+    function SecondDerive(x: Double): Double;
   end;
 
 type
@@ -242,29 +244,41 @@ procedure TFunctionWorker.DrawFunction;
 var
   x, y: Double;
   px, py: Integer;
+  Step: Double;
+
 begin
   FMemoX.Clear;
   FMemoY.Clear;
 
+  Step := 0.05;
+
   FCanvas.Pen.Color := Farben[Random(Length(Farben))];
   FCanvas.Pen.Width := 2;
 
-  for px := 0 to FWidth do
+  // Startpunkt berechnen
+  x := -(FOffsetX / FScaleX); // Startpunkt links auf der Leinwand
+  y := FFunction(x);
+  px := Round(FOffsetX + x * FScaleX);
+  py := FOffsetY - Round(y * FScaleY);
+  FCanvas.MoveTo(px, py);
+
+  // Schleife über den gesamten Zeichenbereich
+  while px <= FWidth do
   begin
-    x := (px - FOffsetX) / FScaleX;
+    x := (px - FOffsetX) / FScaleX; // Weltkoordinate berechnen
     y := FFunction(x);
     py := FOffsetY - Round(y * FScaleY);
 
-    if px = 0 then
-      FCanvas.MoveTo(px, py)
-    else
-      FCanvas.LineTo(px, py);
+    FCanvas.LineTo(px, py);
 
-    if px mod 20 = 0 then
+    // Werte nur alle 0.05-Schritte in die Tabellen eintragen
+    if Abs(Frac(x / Step)) < 1e-6 then
     begin
       FMemoX.Lines.Add(Format('%.2f', [x]));
       FMemoY.Lines.Add(Format('%.2f', [y]));
     end;
+
+    px := px + 1; // Nächster Pixel
   end;
 end;
 
@@ -342,14 +356,56 @@ begin
   FMemoY.Lines.Add('Alle y-Werte möglich');
 end;
 
-// Geplant für eine spätere Version
-//procedure TFunctionWorker.AnalyzeFunction;
-//begin
-//  FMemoAnalysis.Clear;
-//  FMemoAnalysis.Lines.Add('Analyse der Funktion:');
-//  FMemoAnalysis.Lines.Add('Ableitung: Noch nicht implementiert');
-//  FMemoAnalysis.Lines.Add('Grenzwert: Nicht definiert');
-//end;
+procedure TFunctionWorker.AnalyzeFunction;
+var
+  x, y, derivative, secondDerivative: Double;
+  isZero, isExtrema, isInflectionPoint: Boolean; // InfectionPoint heißt Wendepkt im Englischen?
+  i: Integer;
+begin
+  FMemoAnalysis.Clear; // Analysenfeld leeren
+
+  FMemoAnalysis.Lines.Add('Analyse der Funktion:');
+  FMemoAnalysis.Lines.Add('-----------------------');
+
+  for i := -FOffsetX to FWidth - FOffsetX do
+  begin
+    x := i / FScaleX;
+    y := FFunction(x);
+    derivative := Derive(x);
+    secondDerivative := SecondDerive(x);
+
+    // Überprüfen auf Nullstellen
+    isZero := Abs(y) < 0.0001; // Näherung für y = 0
+    if isZero then
+      FMemoAnalysis.Lines.Add(Format('Nullstelle bei x = %.2f', [x]));
+
+    // Überprüfen auf Extrempunkte
+    isExtrema := Abs(derivative) < 0.0001; // Näherung für Ableitung = 0
+    if isExtrema then
+      FMemoAnalysis.Lines.Add(Format('Extrempunkt bei x = %.2f, y = %.2f', [x, y]));
+
+    // Überprüfen auf Wendepunkte
+    isInflectionPoint := Abs(secondDerivative) < 0.0001; // Näherung für zweite Ableitung = 0
+    if isInflectionPoint then
+      FMemoAnalysis.Lines.Add(Format('Wendepunkt bei x = %.2f, y = %.2f', [x, y]));
+  end;
+end;
+
+function TFunctionWorker.Derive(x: Double): Double;
+const
+  h = 0.0001; // Sehr kleiner Schritt für numerische Ableitung
+begin
+  Result := (FFunction(x + h) - FFunction(x - h)) / (2 * h);
+end;
+
+function TFunctionWorker.SecondDerive(x: Double): Double;
+const
+  h = 0.0001; // Sehr kleiner Schritt
+begin
+  Result := (FFunction(x + h) - 2 * FFunction(x) + FFunction(x - h)) / (h * h);
+end;
+
+
 
 { TForm1 }
 
@@ -629,6 +685,7 @@ begin
       end;
 
   end;
+  FWorker.AnalyzeFunction;
 end;
 
 procedure TGraphsPlot.FormCreate(Sender: TObject);

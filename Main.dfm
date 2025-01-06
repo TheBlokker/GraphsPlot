@@ -191,9 +191,8 @@ object GraphsPlot: TGraphsPlot
     Top = 213
     Width = 180
     Height = 89
-    Hint = 'Erst in Sp'#228'teren Version verf'#252'gbar.'
-    Enabled = False
     ParentShowHint = False
+    ScrollBars = ssVertical
     ShowHint = True
     TabOrder = 4
   end
