@@ -1,9 +1,9 @@
-object Form1: TForm1
+object GraphsPlot: TGraphsPlot
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'Form1'
+  Caption = 'GraphsPlot'
   ClientHeight = 555
   ClientWidth = 941
   Color = clBtnFace
@@ -191,6 +191,10 @@ object Form1: TForm1
     Top = 213
     Width = 180
     Height = 89
+    Hint = 'Erst in Sp'#228'teren Version verf'#252'gbar.'
+    Enabled = False
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 4
   end
   object ComboBox1: TComboBox
@@ -376,81 +380,61 @@ object Form1: TForm1
     Top = 520
     object Datei1: TMenuItem
       Caption = 'Datei'
-      object Datei2: TMenuItem
-        Caption = 'Funktionen erstellen'
-        object LeniareFunktion1: TMenuItem
-          Caption = 'Leniare Funktion'
-        end
-        object QuadratischeFunktion1: TMenuItem
-          Caption = 'Quadratische Funktion'
-        end
-        object Potenzfunktion1: TMenuItem
-          Caption = 'Potenzfunktion'
-        end
-        object rigonometrischeFunktion1: TMenuItem
-          Caption = 'Trigonometrische Funktion'
-        end
-        object SenkrechteFunktion1: TMenuItem
-          Caption = 'Senkrechte Funktion'
-        end
-        object FreieFunktioneingabe1: TMenuItem
-          Caption = 'Freie Funktioneingabe'
-        end
-      end
       object Funktionanalysieren1: TMenuItem
         Caption = 'Funktion analysieren'
+        Enabled = False
         object Nullstellen1: TMenuItem
           Caption = 'Nullstellen'
+          Enabled = False
         end
         object Minimum1: TMenuItem
           Caption = 'Minimum'
+          Enabled = False
         end
         object Maximum1: TMenuItem
           Caption = 'Maximum'
+          Enabled = False
         end
         object Schnittpunkte1: TMenuItem
           Caption = 'Schnittpunkte'
+          Enabled = False
         end
         object Wendepunkte1: TMenuItem
           Caption = 'Wendepunkte'
+          Enabled = False
         end
         object N2: TMenuItem
           Caption = '-'
+          Enabled = False
         end
         object Limes1: TMenuItem
           Caption = 'Limes'
+          Enabled = False
         end
         object Abbleitungen1: TMenuItem
           Caption = 'Abbleitungen'
+          Enabled = False
         end
         object angenteFunktion1: TMenuItem
           Caption = 'Tangente Funktion'
+          Enabled = False
         end
         object AbbleitunganeinemPunkt1: TMenuItem
           Caption = 'Abbleitung an einem Punkt'
+          Enabled = False
         end
-      end
-      object tabelle: TMenuItem
-        Caption = 'Tabelle'
-        object abelleexternAnzeigen1: TMenuItem
-          Caption = 'Tabelle extern Anzeigen'
-        end
-        object abelleexternAnzeigen2: TMenuItem
-          Caption = 'Tabelle neben dem Graphen anzeigen'
-        end
-      end
-      object Funktionanalysieren2: TMenuItem
-        Caption = 'Ansicht'
       end
       object N1: TMenuItem
         Caption = '-'
       end
       object Beenden1: TMenuItem
         Caption = 'Beenden'
+        OnClick = Beenden1Click
       end
     end
     object Extras1: TMenuItem
       Caption = 'Extras'
+      Enabled = False
     end
   end
 end

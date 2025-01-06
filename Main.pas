@@ -38,29 +38,21 @@ type
     procedure Drawcosfkt(a, b, c, d: Double);
     procedure Drawtanfkt(a, b, c, d: Double);
     procedure Drawsenkrfkt(k: Double);
-    procedure AnalyzeFunction;
+    //procedure AnalyzeFunction;
   end;
 
 type
-  TForm1 = class(TForm)
+  TGraphsPlot = class(TForm)
     MemoX: TMemo;
     MemoY: TMemo;
     Enter: TButton;
     MainMenu1: TMainMenu;
     StatusBar1: TStatusBar;
     Datei1: TMenuItem;
-    Datei2: TMenuItem;
-    LeniareFunktion1: TMenuItem;
-    QuadratischeFunktion1: TMenuItem;
-    Potenzfunktion1: TMenuItem;
-    rigonometrischeFunktion1: TMenuItem;
-    SenkrechteFunktion1: TMenuItem;
-    FreieFunktioneingabe1: TMenuItem;
     Extras1: TMenuItem;
     N1: TMenuItem;
     Beenden1: TMenuItem;
     Funktionanalysieren1: TMenuItem;
-    Funktionanalysieren2: TMenuItem;
     Limes1: TMenuItem;
     Nullstellen1: TMenuItem;
     Minimum1: TMenuItem;
@@ -71,9 +63,6 @@ type
     Abbleitungen1: TMenuItem;
     angenteFunktion1: TMenuItem;
     AbbleitunganeinemPunkt1: TMenuItem;
-    tabelle: TMenuItem;
-    abelleexternAnzeigen1: TMenuItem;
-    abelleexternAnzeigen2: TMenuItem;
     Label1: TLabel;
     Image1: TImage;
     MemoAnalysis: TMemo;
@@ -115,6 +104,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure EnterClick(Sender: TObject);
+    procedure Beenden1Click(Sender: TObject);
   private
     FWorker: TFunctionWorker;
     { Private-Deklarationen }
@@ -123,7 +113,7 @@ type
   end;
 
 var
-  Form1: TForm1;
+  GraphsPlot: TGraphsPlot;
   Farben: array [0 .. 16] of TColor;
   // Array kann global defniert werden, TList aber nicht?
   CounterFarben: Integer;
@@ -352,17 +342,23 @@ begin
   FMemoY.Lines.Add('Alle y-Werte möglich');
 end;
 
-procedure TFunctionWorker.AnalyzeFunction;
-begin
-  FMemoAnalysis.Clear;
-  FMemoAnalysis.Lines.Add('Analyse der Funktion:');
-  FMemoAnalysis.Lines.Add('Ableitung: Noch nicht implementiert');
-  FMemoAnalysis.Lines.Add('Grenzwert: Nicht definiert');
-end;
+// Geplant für eine spätere Version
+//procedure TFunctionWorker.AnalyzeFunction;
+//begin
+//  FMemoAnalysis.Clear;
+//  FMemoAnalysis.Lines.Add('Analyse der Funktion:');
+//  FMemoAnalysis.Lines.Add('Ableitung: Noch nicht implementiert');
+//  FMemoAnalysis.Lines.Add('Grenzwert: Nicht definiert');
+//end;
 
 { TForm1 }
 
-procedure TForm1.ComboBox1Change(Sender: TObject);
+procedure TGraphsPlot.Beenden1Click(Sender: TObject);
+begin
+Application.Terminate;
+end;
+
+procedure TGraphsPlot.ComboBox1Change(Sender: TObject);
 begin
   case ComboBox1.ItemIndex of
     0:
@@ -596,7 +592,7 @@ begin
 
 end;
 
-procedure TForm1.EnterClick(Sender: TObject);
+procedure TGraphsPlot.EnterClick(Sender: TObject);
 begin
   case ComboBox1.ItemIndex of
     0:
@@ -635,7 +631,7 @@ begin
   end;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TGraphsPlot.FormCreate(Sender: TObject);
 begin
   Randomize;
 
