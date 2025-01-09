@@ -21,6 +21,6 @@ Hier ist mein Programm für einen Graphenzeichner in Delphi erstellt.
 
 ## Bugs/Fehler
 - ~~Werte Tabelle beginn an der Stelle wo der Graph erschein~~
-- Tan-Funktion zeichnet gerade Linien beim fallen der Funktion
+- ~~Tan-Funktion zeichnet gerade Linien beim fallen der Funktion~~
 
 Möchten Sie einen Fehler melden, bitte unter https://github.com/TheBlokker/GraphsPlot/issues
