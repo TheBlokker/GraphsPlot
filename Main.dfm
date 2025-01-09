@@ -23,7 +23,7 @@ object GraphsPlot: TGraphsPlot
     Caption = 'Analyse:'
   end
   object Image1: TImage
-    Left = 368
+    Left = 388
     Top = 24
     Width = 545
     Height = 481
@@ -213,7 +213,7 @@ object GraphsPlot: TGraphsPlot
       'Tangensfuntion'
       'Senkrechte Funktion')
   end
-  object Editlenifktm: TEdit
+  object EditLeniFktM: TEdit
     Left = 48
     Top = 69
     Width = 57
@@ -433,7 +433,10 @@ object GraphsPlot: TGraphsPlot
     end
     object Extras1: TMenuItem
       Caption = 'Extras'
-      Enabled = False
+      object Ueber1: TMenuItem
+        Caption = #220'ber'
+        OnClick = Ueber1Click
+      end
     end
   end
 end

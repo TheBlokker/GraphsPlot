@@ -1,4 +1,35 @@
-﻿unit Main;
+﻿// ======================================================================
+//
+//          GGGGGGGGGGGGG                                                      hhhhhhh             PPPPPPPPPPPPPPPPP   lllllll                           tttt
+//       GGG::::::::::::G                                                      h:::::h             P::::::::::::::::P  l:::::l                        ttt:::t
+//     GG:::::::::::::::G                                                      h:::::h             P::::::PPPPPP:::::P l:::::l                        t:::::t
+//    G:::::GGGGGGGG::::G                                                      h:::::h             PP:::::P     P:::::Pl:::::l                        t:::::t
+//   G:::::G       GGGGGGrrrrr   rrrrrrrrr   aaaaaaaaaaaaa  ppppp   ppppppppp   h::::h hhhhh         P::::P     P:::::P l::::l    ooooooooooo   ttttttt:::::ttttttt
+//  G:::::G              r::::rrr:::::::::r  a::::::::::::a p::::ppp:::::::::p  h::::hh:::::hhh      P::::P     P:::::P l::::l  oo:::::::::::oo t:::::::::::::::::t
+//  G:::::G              r:::::::::::::::::r aaaaaaaaa:::::ap:::::::::::::::::p h::::::::::::::hh    P::::PPPPPP:::::P  l::::l o:::::::::::::::ot:::::::::::::::::t
+//  G:::::G    GGGGGGGGGGrr::::::rrrrr::::::r         a::::app::::::ppppp::::::ph:::::::hhh::::::h   P:::::::::::::PP   l::::l o:::::ooooo:::::otttttt:::::::tttttt
+//  G:::::G    G::::::::G r:::::r     r:::::r  aaaaaaa:::::a p:::::p     p:::::ph::::::h   h::::::h  P::::PPPPPPPPP     l::::l o::::o     o::::o      t:::::t
+//  G:::::G    GGGGG::::G r:::::r     rrrrrrraa::::::::::::a p:::::p     p:::::ph:::::h     h:::::h  P::::P             l::::l o::::o     o::::o      t:::::t
+//  G:::::G        G::::G r:::::r           a::::aaaa::::::a p:::::p     p:::::ph:::::h     h:::::h  P::::P             l::::l o::::o     o::::o      t:::::t
+//   G:::::G       G::::G r:::::r          a::::a    a:::::a p:::::p    p::::::ph:::::h     h:::::h  P::::P             l::::l o::::o     o::::o      t:::::t    tttttt
+//    G:::::GGGGGGGG::::G r:::::r          a::::a    a:::::a p:::::ppppp:::::::ph:::::h     h:::::hPP::::::PP          l::::::lo:::::ooooo:::::o      t::::::tttt:::::t
+//     GG:::::::::::::::G r:::::r          a:::::aaaa::::::a p::::::::::::::::p h:::::h     h:::::hP::::::::P          l::::::lo:::::::::::::::o      tt::::::::::::::t
+//       GGG::::::GGG:::G r:::::r           a::::::::::aa:::ap::::::::::::::pp  h:::::h     h:::::hP::::::::P          l::::::l oo:::::::::::oo         tt:::::::::::tt
+//          GGGGGG   GGGG rrrrrrr            aaaaaaaaaa  aaaap::::::pppppppp    hhhhhhh     hhhhhhhPPPPPPPPPP          llllllll   ooooooooooo             ttttttttttt
+//                                                           p:::::p
+//                                                           p:::::p
+//                                                          p:::::::p
+//                                                          p:::::::p
+//                                                          p:::::::p
+//                                                          ppppppppp
+//
+// Grammar AI: GitHub Copilot, comments, documentation
+// Copyright: Timm Göring (c) 2025
+//
+// Repo: https://github.com/TheBlokker/GraphsPlot
+//
+// ======================================================================
+unit Main;
 
 interface
 
@@ -7,10 +38,11 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.TitleBarCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.StdCtrls, Vcl.Grids, Vcl.ControlList, Vcl.NumberBox,
-  System.Math,
+  System.Math, ABOUT,
   Vcl.ExtCtrls;
 
-type
+type  // https://docwiki.embarcadero.com/RADStudio/Sydney/en/Delphi_Comments#:~:text=the%20reference%20code.-,XML%20Documentation%20Comments,-Delphi%20supports%20XML
+      //  wie muss ich das hiermachen, ist über der richtige wegen von defntion einer class?
   TFunctionWorker = class
   private
     FCanvas: TCanvas;
@@ -71,7 +103,7 @@ type
     ComboBox1: TComboBox;
     Labelyistgleich: TLabel;
     Labellenifktx: TLabel;
-    Editlenifktm: TEdit;
+    EditLeniFktM: TEdit;
     Editlenifktn: TEdit;
     Editquadratfkta: TEdit;
     Labelquadratxhoch2: TLabel;
@@ -103,15 +135,18 @@ type
     Editsenkrfktk: TEdit;
     Label2: TLabel;
     Label3: TLabel;
+    Ueber1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure EnterClick(Sender: TObject);
     procedure Beenden1Click(Sender: TObject);
+    procedure Ueber1Click(Sender: TObject);
   private
     FWorker: TFunctionWorker;
     { Private-Deklarationen }
   public
     { Public-Deklarationen }
+
   end;
 
 var
@@ -119,7 +154,6 @@ var
   Farben: array [0 .. 16] of TColor;
   // Array kann global defniert werden, TList aber nicht?
   CounterFarben: Integer;
-  
 
 implementation
 
@@ -242,9 +276,10 @@ end;
 
 procedure TFunctionWorker.DrawFunction;
 var
-  x, y: Double;
-  px, py: Integer;
+  x, y, yPrev: Double;
+  px, py, pxPrev, pyPrev: Integer;
   Step: Double;
+  IsJump: Boolean;
 
 begin
   FMemoX.Clear;
@@ -258,27 +293,50 @@ begin
   // Startpunkt berechnen
   x := -(FOffsetX / FScaleX); // Startpunkt links auf der Leinwand
   y := FFunction(x);
-  px := Round(FOffsetX + x * FScaleX);
-  py := FOffsetY - Round(y * FScaleY);
-  FCanvas.MoveTo(px, py);
+
+  // Initialisiere vorherige Koordinaten
+  pxPrev := Round(FOffsetX + x * FScaleX);
+  pyPrev := FOffsetY - Round(y * FScaleY);
+  yPrev := y;
+  FCanvas.MoveTo(pxPrev, pyPrev);
 
   // Schleife über den gesamten Zeichenbereich
-  while px <= FWidth do
+  while pxPrev <= FWidth do
   begin
-    x := (px - FOffsetX) / FScaleX; // Weltkoordinate berechnen
+    x := (pxPrev - FOffsetX) / FScaleX; // Weltkoordinate berechnen
     y := FFunction(x);
-    py := FOffsetY - Round(y * FScaleY);
 
-    FCanvas.LineTo(px, py);
+    // Unstetigkeit oder Sprungprüfung
+    IsJump := Abs(y - yPrev) > 100; // Setze eine Schwelle für große Sprünge
+    if not IsJump and (Abs(y) < 1E6) then // Werte überspringen, wenn zu groß
+    begin
+      px := Round(FOffsetX + x * FScaleX);
+      py := FOffsetY - Round(y * FScaleY);
+
+      FCanvas.LineTo(px, py);
+    end
+    else
+    begin
+      // Bei einem Sprung: MoveTo anstelle von LineTo
+      px := Round(FOffsetX + x * FScaleX);
+      py := FOffsetY - Round(y * FScaleY);
+      FCanvas.MoveTo(px, py);
+    end;
 
     // Werte nur alle 0.05-Schritte in die Tabellen eintragen
-    if Abs(Frac(x / Step)) < 1e-6 then
+    if Abs(Frac(x / Step)) < 1E-6 then
     begin
       FMemoX.Lines.Add(Format('%.2f', [x]));
       FMemoY.Lines.Add(Format('%.2f', [y]));
     end;
 
-    px := px + 1; // Nächster Pixel
+    // Werte aktualisieren
+    pxPrev := px;
+    pyPrev := py;
+    yPrev := y;
+
+    // Nächster Pixel
+    pxPrev := pxPrev + 1;
   end;
 end;
 
@@ -359,13 +417,13 @@ end;
 procedure TFunctionWorker.AnalyzeFunction;
 var
   x, y, derivative, secondDerivative: Double;
-  isZero, isExtrema, isInflectionPoint: Boolean; // InfectionPoint heißt Wendepkt im Englischen?
+  foundResults: Boolean;
   i: Integer;
 begin
   FMemoAnalysis.Clear; // Analysenfeld leeren
-
   FMemoAnalysis.Lines.Add('Analyse der Funktion:');
   FMemoAnalysis.Lines.Add('-----------------------');
+  foundResults := False;
 
   for i := -FOffsetX to FWidth - FOffsetX do
   begin
@@ -374,21 +432,64 @@ begin
     derivative := Derive(x);
     secondDerivative := SecondDerive(x);
 
-    // Überprüfen auf Nullstellen
-    isZero := Abs(y) < 0.0001; // Näherung für y = 0
-    if isZero then
+    // **Nullstellen-Erkennung** (Kombination aus exakter Prüfung und Zwischenwert-Methode)
+    if Abs(y) < 0.0001 then
+    begin
       FMemoAnalysis.Lines.Add(Format('Nullstelle bei x = %.2f', [x]));
+      foundResults := True;
+    end
+    else if (i > -FOffsetX) and (FFunction(x) * FFunction(x - 1 / FScaleX) < 0)
+    then
+    begin
+      FMemoAnalysis.Lines.Add(Format('Nullstelle bei x zwischen %.2f und %.2f',
+        [x - 1 / FScaleX, x]));
+      foundResults := True;
+    end;
 
-    // Überprüfen auf Extrempunkte
-    isExtrema := Abs(derivative) < 0.0001; // Näherung für Ableitung = 0
-    if isExtrema then
-      FMemoAnalysis.Lines.Add(Format('Extrempunkt bei x = %.2f, y = %.2f', [x, y]));
+    // **Extrempunkte-Erkennung** (Ableitung nahe null + Vorzeichenwechsel der Ableitung)
+    if Abs(derivative) < 0.0001 then
+    begin
+      // Bestimme das Vorzeichen der zweiten Ableitung
+      if secondDerivative > 0 then
+        FMemoAnalysis.Lines.Add
+          (Format('Minimum bei x = %.2f, y = %.2f', [x, y]))
+      else if secondDerivative < 0 then
+        FMemoAnalysis.Lines.Add
+          (Format('Maximum bei x = %.2f, y = %.2f', [x, y]));
+      foundResults := True;
+    end
+    else if (i > -FOffsetX) and (Derive(x - 1 / FScaleX) * Derive(x) < 0) then
+    begin
+      FMemoAnalysis.Lines.Add
+        (Format('Extrempunkt in der Nähe von x = %.2f', [x]));
+      foundResults := True;
+    end;
 
-    // Überprüfen auf Wendepunkte
-    isInflectionPoint := Abs(secondDerivative) < 0.0001; // Näherung für zweite Ableitung = 0
-    if isInflectionPoint then
-      FMemoAnalysis.Lines.Add(Format('Wendepunkt bei x = %.2f, y = %.2f', [x, y]));
+    // **Wendepunkte-Erkennung** (Zweite Ableitung nahe null + Vorzeichenwechsel)
+    if Abs(secondDerivative) < 0.0001 then
+    begin
+      // Zusätzliche Prüfung: Vorzeichenwechsel der ersten Ableitung
+      if (i > -FOffsetX) and
+        (Derive(x - 1 / FScaleX) * Derive(x + 1 / FScaleX) < 0) then
+      begin
+        FMemoAnalysis.Lines.Add
+          (Format('Wendepunkt bei x = %.2f, y = %.2f', [x, y]));
+        foundResults := True;
+      end;
+    end
+    else if (i > -FOffsetX) and
+      (SecondDerive(x - 1 / FScaleX) * SecondDerive(x) < 0) then
+    begin
+      FMemoAnalysis.Lines.Add
+        (Format('Wendepunkt in der Nähe von x = %.2f', [x]));
+      foundResults := True;
+    end;
   end;
+
+  // Standardmeldung, falls keine Ergebnisse gefunden werden
+  if not foundResults then
+    FMemoAnalysis.Lines.Add
+      ('Keine Nullstellen, Extrempunkte oder Wendepunkte gefunden.');
 end;
 
 function TFunctionWorker.Derive(x: Double): Double;
@@ -405,244 +506,243 @@ begin
   Result := (FFunction(x + h) - 2 * FFunction(x) + FFunction(x - h)) / (h * h);
 end;
 
-
-
 { TForm1 }
 
 procedure TGraphsPlot.Beenden1Click(Sender: TObject);
 begin
-Application.Terminate;
+  Application.Terminate;
 end;
 
+// Auswahl auslagern???
 procedure TGraphsPlot.ComboBox1Change(Sender: TObject);
 begin
   case ComboBox1.ItemIndex of
     0:
       begin
-        Labellenifktx.Visible := true;
-        Editlenifktm.Visible := true;
-        Editlenifktn.Visible := true;
-        Labelyistgleich.Visible := true;
+        Labellenifktx.Visible := True;
+        EditLeniFktM.Visible := True;
+        Editlenifktn.Visible := True;
+        Labelyistgleich.Visible := True;
 
         // False statements
-        Labelquadratx.Visible := false;
-        Labelquadratxhoch2.Visible := false;
-        Editquadratfkta.Visible := false;
-        Editquadratfktb.Visible := false;
-        Editquadratfktc.Visible := false;
-        Labelsinfktsin.Visible := false;
-        Labelsinfktx.Visible := false;
-        Labelsinfktplus.Visible := false;
-        Editsinfkta.Visible := false;
-        Editsinfktb.Visible := false;
-        Editsinfktc.Visible := false;
-        Editsinfktd.Visible := false;
-        Labelcosfktcos.Visible := false;
-        Labelcosfktx.Visible := false;
-        Labelcosfktplus.Visible := false;
-        Editcosfkta.Visible := false;
-        Editcosfktb.Visible := false;
-        Editcosfktc.Visible := false;
-        Editcosfktd.Visible := false;
-        Labeltanfkttan.Visible := false;
-        Labeltanfktx.Visible := false;
-        Labeltanfktplus.Visible := false;
-        Edittanfkta.Visible := false;
-        Edittanfktb.Visible := false;
-        Edittanfktc.Visible := false;
-        Edittanfktd.Visible := false;
-        Labelxistgleich.Visible := false;
-        Editsenkrfktk.Visible := false;
+        Labelquadratx.Visible := False;
+        Labelquadratxhoch2.Visible := False;
+        Editquadratfkta.Visible := False;
+        Editquadratfktb.Visible := False;
+        Editquadratfktc.Visible := False;
+        Labelsinfktsin.Visible := False;
+        Labelsinfktx.Visible := False;
+        Labelsinfktplus.Visible := False;
+        Editsinfkta.Visible := False;
+        Editsinfktb.Visible := False;
+        Editsinfktc.Visible := False;
+        Editsinfktd.Visible := False;
+        Labelcosfktcos.Visible := False;
+        Labelcosfktx.Visible := False;
+        Labelcosfktplus.Visible := False;
+        Editcosfkta.Visible := False;
+        Editcosfktb.Visible := False;
+        Editcosfktc.Visible := False;
+        Editcosfktd.Visible := False;
+        Labeltanfkttan.Visible := False;
+        Labeltanfktx.Visible := False;
+        Labeltanfktplus.Visible := False;
+        Edittanfkta.Visible := False;
+        Edittanfktb.Visible := False;
+        Edittanfktc.Visible := False;
+        Edittanfktd.Visible := False;
+        Labelxistgleich.Visible := False;
+        Editsenkrfktk.Visible := False;
       end;
 
     1:
       begin
-        Labelquadratxhoch2.Visible := true;
-        Labelquadratx.Visible := true;
-        Editquadratfkta.Visible := true;
-        Editquadratfktb.Visible := true;
-        Editquadratfktc.Visible := true;
-        Labelyistgleich.Visible := true;
+        Labelquadratxhoch2.Visible := True;
+        Labelquadratx.Visible := True;
+        Editquadratfkta.Visible := True;
+        Editquadratfktb.Visible := True;
+        Editquadratfktc.Visible := True;
+        Labelyistgleich.Visible := True;
 
         // False statements
-        Labellenifktx.Visible := false;
-        Editlenifktm.Visible := false;
-        Editlenifktn.Visible := false;
-        Labelsinfktsin.Visible := false;
-        Labelsinfktx.Visible := false;
-        Labelsinfktplus.Visible := false;
-        Editsinfkta.Visible := false;
-        Editsinfktb.Visible := false;
-        Editsinfktc.Visible := false;
-        Editsinfktd.Visible := false;
-        Labelcosfktcos.Visible := false;
-        Labelcosfktx.Visible := false;
-        Labelcosfktplus.Visible := false;
-        Editcosfkta.Visible := false;
-        Editcosfktb.Visible := false;
-        Editcosfktc.Visible := false;
-        Editcosfktd.Visible := false;
-        Labeltanfkttan.Visible := false;
-        Labeltanfktx.Visible := false;
-        Labeltanfktplus.Visible := false;
-        Edittanfkta.Visible := false;
-        Edittanfktb.Visible := false;
-        Edittanfktc.Visible := false;
-        Edittanfktd.Visible := false;
-        Labelxistgleich.Visible := false;
-        Editsenkrfktk.Visible := false;
+        Labellenifktx.Visible := False;
+        EditLeniFktM.Visible := False;
+        Editlenifktn.Visible := False;
+        Labelsinfktsin.Visible := False;
+        Labelsinfktx.Visible := False;
+        Labelsinfktplus.Visible := False;
+        Editsinfkta.Visible := False;
+        Editsinfktb.Visible := False;
+        Editsinfktc.Visible := False;
+        Editsinfktd.Visible := False;
+        Labelcosfktcos.Visible := False;
+        Labelcosfktx.Visible := False;
+        Labelcosfktplus.Visible := False;
+        Editcosfkta.Visible := False;
+        Editcosfktb.Visible := False;
+        Editcosfktc.Visible := False;
+        Editcosfktd.Visible := False;
+        Labeltanfkttan.Visible := False;
+        Labeltanfktx.Visible := False;
+        Labeltanfktplus.Visible := False;
+        Edittanfkta.Visible := False;
+        Edittanfktb.Visible := False;
+        Edittanfktc.Visible := False;
+        Edittanfktd.Visible := False;
+        Labelxistgleich.Visible := False;
+        Editsenkrfktk.Visible := False;
       end;
 
     2:
       begin
-        Labelsinfktsin.Visible := true;
-        Labelsinfktx.Visible := true;
-        Labelsinfktplus.Visible := true;
-        Editsinfkta.Visible := true;
-        Editsinfktb.Visible := true;
-        Editsinfktc.Visible := true;
-        Editsinfktd.Visible := true;
-        Labelyistgleich.Visible := true;
+        Labelsinfktsin.Visible := True;
+        Labelsinfktx.Visible := True;
+        Labelsinfktplus.Visible := True;
+        Editsinfkta.Visible := True;
+        Editsinfktb.Visible := True;
+        Editsinfktc.Visible := True;
+        Editsinfktd.Visible := True;
+        Labelyistgleich.Visible := True;
 
         // False statements
-        Labelquadratx.Visible := false;
-        Labellenifktx.Visible := false;
-        Editlenifktm.Visible := false;
-        Editlenifktn.Visible := false;
-        Labelquadratxhoch2.Visible := false;
-        Editquadratfkta.Visible := false;
-        Editquadratfktb.Visible := false;
-        Editquadratfktc.Visible := false;
-        Labelcosfktcos.Visible := false;
-        Labelcosfktx.Visible := false;
-        Labelcosfktplus.Visible := false;
-        Editcosfkta.Visible := false;
-        Editcosfktb.Visible := false;
-        Editcosfktc.Visible := false;
-        Editcosfktd.Visible := false;
-        Labeltanfkttan.Visible := false;
-        Labeltanfktx.Visible := false;
-        Labeltanfktplus.Visible := false;
-        Edittanfkta.Visible := false;
-        Edittanfktb.Visible := false;
-        Edittanfktc.Visible := false;
-        Edittanfktd.Visible := false;
-        Labelxistgleich.Visible := false;
-        Editsenkrfktk.Visible := false;
+        Labelquadratx.Visible := False;
+        Labellenifktx.Visible := False;
+        EditLeniFktM.Visible := False;
+        Editlenifktn.Visible := False;
+        Labelquadratxhoch2.Visible := False;
+        Editquadratfkta.Visible := False;
+        Editquadratfktb.Visible := False;
+        Editquadratfktc.Visible := False;
+        Labelcosfktcos.Visible := False;
+        Labelcosfktx.Visible := False;
+        Labelcosfktplus.Visible := False;
+        Editcosfkta.Visible := False;
+        Editcosfktb.Visible := False;
+        Editcosfktc.Visible := False;
+        Editcosfktd.Visible := False;
+        Labeltanfkttan.Visible := False;
+        Labeltanfktx.Visible := False;
+        Labeltanfktplus.Visible := False;
+        Edittanfkta.Visible := False;
+        Edittanfktb.Visible := False;
+        Edittanfktc.Visible := False;
+        Edittanfktd.Visible := False;
+        Labelxistgleich.Visible := False;
+        Editsenkrfktk.Visible := False;
       end;
 
     3:
       begin
-        Labelcosfktcos.Visible := true;
-        Labelcosfktx.Visible := true;
-        Labelcosfktplus.Visible := true;
-        Editcosfkta.Visible := true;
-        Editcosfktb.Visible := true;
-        Editcosfktc.Visible := true;
-        Editcosfktd.Visible := true;
-        Labelyistgleich.Visible := true;
+        Labelcosfktcos.Visible := True;
+        Labelcosfktx.Visible := True;
+        Labelcosfktplus.Visible := True;
+        Editcosfkta.Visible := True;
+        Editcosfktb.Visible := True;
+        Editcosfktc.Visible := True;
+        Editcosfktd.Visible := True;
+        Labelyistgleich.Visible := True;
 
         // False statements
-        Labelquadratx.Visible := false;
-        Labellenifktx.Visible := false;
-        Editlenifktm.Visible := false;
-        Editlenifktn.Visible := false;
-        Labelquadratxhoch2.Visible := false;
-        Editquadratfkta.Visible := false;
-        Editquadratfktb.Visible := false;
-        Editquadratfktc.Visible := false;
-        Labelsinfktsin.Visible := false;
-        Labelsinfktx.Visible := false;
-        Labelsinfktplus.Visible := false;
-        Editsinfkta.Visible := false;
-        Editsinfktb.Visible := false;
-        Editsinfktc.Visible := false;
-        Editsinfktd.Visible := false;
-        Labeltanfkttan.Visible := false;
-        Labeltanfktx.Visible := false;
-        Labeltanfktplus.Visible := false;
-        Edittanfkta.Visible := false;
-        Edittanfktb.Visible := false;
-        Edittanfktc.Visible := false;
-        Edittanfktd.Visible := false;
-        Labelxistgleich.Visible := false;
-        Editsenkrfktk.Visible := false;
+        Labelquadratx.Visible := False;
+        Labellenifktx.Visible := False;
+        EditLeniFktM.Visible := False;
+        Editlenifktn.Visible := False;
+        Labelquadratxhoch2.Visible := False;
+        Editquadratfkta.Visible := False;
+        Editquadratfktb.Visible := False;
+        Editquadratfktc.Visible := False;
+        Labelsinfktsin.Visible := False;
+        Labelsinfktx.Visible := False;
+        Labelsinfktplus.Visible := False;
+        Editsinfkta.Visible := False;
+        Editsinfktb.Visible := False;
+        Editsinfktc.Visible := False;
+        Editsinfktd.Visible := False;
+        Labeltanfkttan.Visible := False;
+        Labeltanfktx.Visible := False;
+        Labeltanfktplus.Visible := False;
+        Edittanfkta.Visible := False;
+        Edittanfktb.Visible := False;
+        Edittanfktc.Visible := False;
+        Edittanfktd.Visible := False;
+        Labelxistgleich.Visible := False;
+        Editsenkrfktk.Visible := False;
       end;
 
     4:
       begin
-        Labeltanfkttan.Visible := true;
-        Labeltanfktx.Visible := true;
-        Labeltanfktplus.Visible := true;
-        Edittanfkta.Visible := true;
-        Edittanfktb.Visible := true;
-        Edittanfktc.Visible := true;
-        Edittanfktd.Visible := true;
-        Labelyistgleich.Visible := true;
+        Labeltanfkttan.Visible := True;
+        Labeltanfktx.Visible := True;
+        Labeltanfktplus.Visible := True;
+        Edittanfkta.Visible := True;
+        Edittanfktb.Visible := True;
+        Edittanfktc.Visible := True;
+        Edittanfktd.Visible := True;
+        Labelyistgleich.Visible := True;
 
         // False statements
-        Labelquadratx.Visible := false;
-        Labellenifktx.Visible := false;
-        Editlenifktm.Visible := false;
-        Editlenifktn.Visible := false;
-        Labelquadratxhoch2.Visible := false;
-        Editquadratfkta.Visible := false;
-        Editquadratfktb.Visible := false;
-        Editquadratfktc.Visible := false;
-        Labelsinfktsin.Visible := false;
-        Labelsinfktx.Visible := false;
-        Labelsinfktplus.Visible := false;
-        Editsinfkta.Visible := false;
-        Editsinfktb.Visible := false;
-        Editsinfktc.Visible := false;
-        Editsinfktd.Visible := false;
-        Labelcosfktcos.Visible := false;
-        Labelcosfktx.Visible := false;
-        Labelcosfktplus.Visible := false;
-        Editcosfkta.Visible := false;
-        Editcosfktb.Visible := false;
-        Editcosfktc.Visible := false;
-        Editcosfktd.Visible := false;
-        Labelxistgleich.Visible := false;
-        Editsenkrfktk.Visible := false;
+        Labelquadratx.Visible := False;
+        Labellenifktx.Visible := False;
+        EditLeniFktM.Visible := False;
+        Editlenifktn.Visible := False;
+        Labelquadratxhoch2.Visible := False;
+        Editquadratfkta.Visible := False;
+        Editquadratfktb.Visible := False;
+        Editquadratfktc.Visible := False;
+        Labelsinfktsin.Visible := False;
+        Labelsinfktx.Visible := False;
+        Labelsinfktplus.Visible := False;
+        Editsinfkta.Visible := False;
+        Editsinfktb.Visible := False;
+        Editsinfktc.Visible := False;
+        Editsinfktd.Visible := False;
+        Labelcosfktcos.Visible := False;
+        Labelcosfktx.Visible := False;
+        Labelcosfktplus.Visible := False;
+        Editcosfkta.Visible := False;
+        Editcosfktb.Visible := False;
+        Editcosfktc.Visible := False;
+        Editcosfktd.Visible := False;
+        Labelxistgleich.Visible := False;
+        Editsenkrfktk.Visible := False;
       end;
 
     5:
       begin
-        Labelxistgleich.Visible := true;
-        Editsenkrfktk.Visible := true;
+        Labelxistgleich.Visible := True;
+        Editsenkrfktk.Visible := True;
 
         // False statements
-        Labelyistgleich.Visible := false;
-        Labelquadratx.Visible := false;
-        Labellenifktx.Visible := false;
-        Editlenifktm.Visible := false;
-        Editlenifktn.Visible := false;
-        Labelquadratxhoch2.Visible := false;
-        Editquadratfkta.Visible := false;
-        Editquadratfktb.Visible := false;
-        Editquadratfktc.Visible := false;
-        Labelsinfktsin.Visible := false;
-        Labelsinfktx.Visible := false;
-        Labelsinfktplus.Visible := false;
-        Editsinfkta.Visible := false;
-        Editsinfktb.Visible := false;
-        Editsinfktc.Visible := false;
-        Editsinfktd.Visible := false;
-        Labelcosfktcos.Visible := false;
-        Labelcosfktx.Visible := false;
-        Labelcosfktplus.Visible := false;
-        Editcosfkta.Visible := false;
-        Editcosfktb.Visible := false;
-        Editcosfktc.Visible := false;
-        Editcosfktd.Visible := false;
-        Labeltanfkttan.Visible := false;
-        Labeltanfktx.Visible := false;
-        Labeltanfktplus.Visible := false;
-        Edittanfkta.Visible := false;
-        Edittanfktb.Visible := false;
-        Edittanfktc.Visible := false;
-        Edittanfktd.Visible := false;
+        Labelyistgleich.Visible := False;
+        Labelquadratx.Visible := False;
+        Labellenifktx.Visible := False;
+        EditLeniFktM.Visible := False;
+        Editlenifktn.Visible := False;
+        Labelquadratxhoch2.Visible := False;
+        Editquadratfkta.Visible := False;
+        Editquadratfktb.Visible := False;
+        Editquadratfktc.Visible := False;
+        Labelsinfktsin.Visible := False;
+        Labelsinfktx.Visible := False;
+        Labelsinfktplus.Visible := False;
+        Editsinfkta.Visible := False;
+        Editsinfktb.Visible := False;
+        Editsinfktc.Visible := False;
+        Editsinfktd.Visible := False;
+        Labelcosfktcos.Visible := False;
+        Labelcosfktx.Visible := False;
+        Labelcosfktplus.Visible := False;
+        Editcosfkta.Visible := False;
+        Editcosfktb.Visible := False;
+        Editcosfktc.Visible := False;
+        Editcosfktd.Visible := False;
+        Labeltanfkttan.Visible := False;
+        Labeltanfktx.Visible := False;
+        Labeltanfktplus.Visible := False;
+        Edittanfkta.Visible := False;
+        Edittanfktb.Visible := False;
+        Edittanfktc.Visible := False;
+        Edittanfktd.Visible := False;
       end;
   end;
 
@@ -653,7 +753,7 @@ begin
   case ComboBox1.ItemIndex of
     0:
       begin
-        FWorker.Drawleniarefkt(StrToFloat(Editlenifktm.Text),
+        FWorker.Drawleniarefkt(StrToFloat(EditLeniFktM.Text),
           StrToFloat(Editlenifktn.Text));
       end;
     1:
@@ -701,13 +801,14 @@ begin
   Farben[0] := clAqua;
   Farben[1] := clBlack;
   Farben[2] := clBlue;
-  Farben[3] := clCream;
+  Farben[3] := clBlue;
   Farben[4] := clDkGray;
   Farben[5] := clFuchsia;
   Farben[6] := clGreen;
   Farben[7] := clLime;
   Farben[8] := clMaroon;
-  Farben[9] := clMedGray; // In der bibliotheks referenz steht das es clMedGreen gibt.
+  Farben[9] := clMedGray;
+  // In der bibliotheks referenz steht das es clMedGreen gibt.
   Farben[10] := clNavy;
   Farben[11] := clOlive;
   Farben[12] := clPurple;
@@ -716,7 +817,11 @@ begin
   Farben[15] := clTeal;
   Farben[16] := clYellow;
 
+end;
 
+procedure TGraphsPlot.Ueber1Click(Sender: TObject);
+begin
+  AboutBox.Show();
 end;
 
 end.
